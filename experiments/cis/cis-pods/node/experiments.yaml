@@ -1,0 +1,61 @@
+experiments:
+  - key: 1.1.1
+    file: "/config/kube-apiserver.yaml"
+    operation: "chmod 645"
+  - key: 1.1.2
+    file: "/config/kube-apiserver.yaml"
+    operation: "chown nobody"
+  - key: 1.1.3
+    file: "/config/kube-controller-manager.yaml"
+    operation: "chmod 645"
+  - key: 1.1.4
+    file: "/config/kube-controller-manager.yaml"
+    operation: "chown nobody"
+  - key: 1.1.5
+    file: "/config/kube-scheduler.yaml"
+    operation: "chmod 645"
+  - key: 1.1.6
+    file: "/config/kube-scheduler.yaml"
+    operation: "chown nobody"
+  - key: 1.1.7
+    file: "/config/etcd.yaml"
+    operation: "chmod 645"
+  - key: 1.1.8
+    file: "/config/etcd.yaml"
+    operation: "chown nobody"
+  - key: 1.1.13
+    file: "/config/admin.conf"
+    operation: "chmod 645"
+  - key: 1.1.14
+    file: "/config/admin.conf"
+    operation: "chown nobody"
+  - key: 1.1.15
+    file: "/config/scheduler.conf"
+    operation: "chmod 645"
+  - key: 1.1.16
+    file: "/config/scheduler.conf"
+    operation: "chown nobody"
+  - key: 1.1.17
+    file: "/config/controller-manager.conf"
+    operation: "chmod 645"
+  - key: 1.1.18
+    file: "/config/controller-manager.conf"
+    operation: "chown nobody"
+  - key: 4.1.1
+    file: "/config/10-kubeadm.conf"
+    operation: "chmod 645"
+  - key: 4.1.2
+    file: "/config/10-kubeadm.conf"
+    operation: "chown nobody"
+  - key: 4.1.5
+    file: "/config/kubelet.conf"
+    operation: "chmod 654"
+  - key: 4.1.6
+    file: "/config/kubelet.conf"
+    operation: "chown nobody"
+  - key: 4.1.9
+    file: "/config/config.yaml"
+    operation: "chmod 645"
+  - key: 4.1.10
+    file: "/config/config.yaml"
+    operation: "chown nobody"
