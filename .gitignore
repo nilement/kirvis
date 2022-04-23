@@ -1,0 +1,6 @@
+**/security-operator-master
+.idea
+.run
+*.iml
+bin
+.env
