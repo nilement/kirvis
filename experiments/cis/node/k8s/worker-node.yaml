@@ -7,25 +7,21 @@ spec:
   restartPolicy: Never
   containers:
   - name: cis-worker
-    image: cispod:local
-    args: ["4.1.1", "4.1.2", "4.1.5", "4.1.5", "4.1.6", "4.1.9", "4.1.10"]
-    imagePullPolicy: IfNotPresent
-    lifecycle:
-      preStop:
-        exec:
-          command: ["/src/main", "-r"]
+    image: localhost:5000/cispod:local
+    args: ["4.1.5"]
+    imagePullPolicy: Always
     volumeMounts:
-    - mountPath: "/config/10-kubeadm.conf"
-      name: kubelet-service
+#    - mountPath: "/config/10-kubeadm.conf"
+#      name: kubelet-service
     - mountPath: "/config/kubelet.conf"
       name: kubelet-kubeconf
     - mountPath: "/config/config.yaml"
       name: kubelet-conf
   volumes:
-      - name: kubelet-service
-        hostPath:
-            path: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
-            type: File
+#      - name: kubelet-service
+#        hostPath:
+#            path: "/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+#            type: File
       - name: kubelet-kubeconf
         hostPath:
             path: "/etc/kubernetes/kubelet.conf"
