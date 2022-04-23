@@ -1,22 +1,22 @@
 package main
 
 import (
-	"log"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
-	"runtime"
 	"syscall"
 	"time"
 
-	"github.com/nilement/komrade/config"
-	"github.com/nilement/komrade/experiment"
+	"github.com/nilement/node/config"
+	"github.com/nilement/node/experiment"
 )
 
-func main() {
-	if runtime.GOOS != "linux" {
-		log.Fatalf("only Linux runtime is supported!")
-	}
+type Runner struct {
+	log *logrus.Entry
+}
 
+func main() {
+	log := logrus.WithFields(logrus.Fields{})
 	if len(os.Args[1:]) == 0 {
 		log.Fatalf("no experiments specified!")
 	}
@@ -46,7 +46,7 @@ func main() {
 		}
 	}
 
-	completedExperiments := make([]experiment.Experiment, len(experiments))
+	completedExperiments := make([]experiment.Experiment, 0)
 	for _, e := range experiments {
 		err := e.Execute()
 		if err != nil {
@@ -56,27 +56,55 @@ func main() {
 				if err != nil {
 					log.Fatal("failed rollback!")
 				}
+				log.Infof("Completed rollback for: %s", ce.Key)
 			}
 			log.Fatalf("rollbacked %s", e.Key)
 		}
 		completedExperiments = append(completedExperiments, e)
 	}
 
+	r := &Runner{
+		log: log,
+	}
+
+	err = r.wait(completedExperiments)
+	if err != nil {
+		log.Fatalf("failed restore: %v", err)
+	}
+}
+
+func(r *Runner) rollbackExperiments(experiments []experiment.Experiment) error {
+	for _, ce := range experiments {
+		err := ce.RestoreFile()
+		if err != nil {
+			r.log.Errorf("Failed rollback for: %s", ce.Key)
+			return err
+		}
+		r.log.Infof("Completed rollback for: %s", ce.Key)
+	}
+
+	return nil
+}
+
+func(r *Runner) wait(completedExperiments []experiment.Experiment) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
+	var misconf string
+	for _, e := range completedExperiments {
+		misconf += e.Key + " "
+	}
+
+	t := time.NewTicker(5 * time.Second)
+	defer t.Stop()
+
 	for {
-		log.Println("Applied CIS Benchmark Worker node misconfigurations")
-		time.Sleep(time.Second * 30)
 		select {
+		case <- t.C:
+			r.log.Infof("Active CIS Benchmark Worker node misconfigurations: %s", misconf)
 		case <-sigs:
-			log.Println("Experiments terminated. Rolling back")
-			for _, ce := range completedExperiments {
-				err := ce.RestoreFile()
-				if err != nil {
-					log.Fatal("Failed rollback!")
-				}
-			}
+			r.log.Info("Experiments terminated. Rolling back")
+			return r.rollbackExperiments(completedExperiments)
 		}
 	}
 }

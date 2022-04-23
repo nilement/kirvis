@@ -10,7 +10,7 @@ reapply:
 	kubectl apply -f ./k8s/worker-node.yaml
 
 bench:
-	kubectl delete -f kube-bench/kube-bench-job.yaml
-	kubectl apply -f kube-bench/kube-bench-job.yaml
+	- kubectl delete -f kube-bench/kube-bench.yaml
+	kubectl apply -f kube-bench/kube-bench.yaml
 
 retry: build push reapply

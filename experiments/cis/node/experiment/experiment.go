@@ -3,6 +3,8 @@ package experiment
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -33,27 +35,55 @@ func(e *Experiment) Execute() error {
 }
 
 func(e *Experiment) Backup() error {
-	return copyNative(e.File, "./backups/")
+	parts := strings.Split(e.File, "/")
+	file := parts[len(parts) - 1]
+	backup := fmt.Sprintf("./backups/%s", file)
+
+	return copyFile(e.File, backup)
 }
 
 func(e *Experiment) RestoreFile() error {
 	parts := strings.Split(e.File, "/")
 	file := parts[len(parts) - 1]
 	l := fmt.Sprintf("./backups/%s", file)
-	return copyNative(l, e.File)
+	return copyFile(l, e.File)
 }
-func copyNative(src, dst string) error {
-	cmd := exec.Command("cp", "-rp", src, dst)
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+func copyFile(src, dst string) (err error) {
+	in, err := os.Open(src)
 	if err != nil {
-		fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
-		return err
+		return
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer func() {
+		if e := out.Close(); e != nil {
+			err = e
+		}
+	}()
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return
 	}
 
-	return nil
+	err = out.Sync()
+	if err != nil {
+		return
+	}
+
+	si, err := os.Stat(src)
+	if err != nil {
+		return
+	}
+	err = os.Chmod(dst, si.Mode())
+	if err != nil {
+		return
+	}
+
+	return
 }

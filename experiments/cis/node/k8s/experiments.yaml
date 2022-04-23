@@ -42,20 +42,20 @@ experiments:
     file: "/config/controller-manager.conf"
     operation: "chown nobody"
   - key: 4.1.1
-    file: "/config/10-kubeadm.conf"
+    file: "/kubelet-service/10-kubeadm.conf"
     operation: "chmod 645"
   - key: 4.1.2
-    file: "/config/10-kubeadm.conf"
+    file: "/kubelet-service/10-kubeadm.conf"
     operation: "chown nobody"
   - key: 4.1.5
-    file: "/config/kubelet.conf"
+    file: "/kubeadm/kubelet.conf"
     operation: "chmod 654"
   - key: 4.1.6
-    file: "/config/kubelet.conf"
+    file: "/kubeadm/kubelet.conf"
     operation: "chown nobody"
   - key: 4.1.9
-    file: "/config/config.yaml"
+    file: "/kubelet/config.yaml"
     operation: "chmod 645"
   - key: 4.1.10
-    file: "/config/config.yaml"
+    file: "/kubelet/config.yaml"
     operation: "chown nobody"

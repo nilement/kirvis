@@ -1,0 +1,30 @@
+fullnameOverride: grafana
+adminPassword: admin
+grafana.ini:
+  server:
+    serve_from_sub_path: false
+    root_url: /
+  analytics:
+    check_for_updates: false
+  grafana_net:
+    url: https://grafana.net
+  log:
+    mode: console
+  auth.anonymous:
+    enabled: true
+    org_name: Main Org.
+    org_role: Admin
+  users:
+    default_theme: light
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        url: http://loki.loki:3100
+        access: proxy
+        isDefault: true
+        jsonData:
+          maxLines: 1000

@@ -1,0 +1,17 @@
+enabled: true
+fullnameOverride: promtail
+config:
+  lokiAddress: http://loki:3100/loki/api/v1/push
+  snippets:
+    pipelineStages:
+      - docker: {}
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+initContainer:
+  enabled: true
+  fsInotifyMaxUserInstances: 8192

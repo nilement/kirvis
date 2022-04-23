@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/nilement/komrade/experiment"
+	"github.com/nilement/node/experiment"
 )
 
 type Config struct {

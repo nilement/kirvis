@@ -9,7 +9,7 @@ spec:
       labels:
         app: kube-bench
     spec:
-      nodeName: test-chaos-cluster-worker
+      nodeName: chaos-worker
       hostPID: true
       containers:
         - name: kube-bench
