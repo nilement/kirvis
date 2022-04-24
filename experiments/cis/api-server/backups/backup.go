@@ -12,7 +12,7 @@ func RestoreFile(origFile string) error {
 	file := parts[len(parts) - 1]
 	backup := fmt.Sprintf("./backups/%s", file)
 
-	return copyFile(backup, file)
+	return copyFile(backup, origFile)
 }
 
 func BackupFile(apiFile string) error {

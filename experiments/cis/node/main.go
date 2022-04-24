@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -90,10 +91,11 @@ func(r *Runner) wait(completedExperiments []experiment.Experiment) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	var misconf string
-	for _, e := range completedExperiments {
-		misconf += e.Key + " "
+	keys := make([]string, len(completedExperiments))
+	for i, e := range completedExperiments {
+		keys[i] = e.Key
 	}
+	misconf := strings.Join(keys, ", ")
 
 	t := time.NewTicker(5 * time.Second)
 	defer t.Stop()

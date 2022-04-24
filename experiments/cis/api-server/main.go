@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/nilement/apiserver/backups"
 	"os"
 	"os/signal"
 	"strings"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/nilement/apiserver/config"
 	"github.com/nilement/apiserver/experiment"
+	"github.com/nilement/apiserver/backups"
 )
 
 const (
@@ -70,12 +70,7 @@ func main() {
 	for _, e := range experiments {
 		commands, err = e.Execute(commands)
 		if err != nil {
-			log.Errorf("rolling back due to error: %v", err)
-			err = backups.RestoreFile(apiServerFile)
-			if err != nil {
-				log.Fatalf("rollback failed: %v", err)
-			}
-			return
+
 		}
 	}
 
@@ -85,31 +80,70 @@ func main() {
 		log.Fatalf("failed to output kube-apiserver.yaml: %v", err)
 	}
 
-	//args, err := getKubeAPIServerArgs()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//for _, e := range experiments {
-	//	applied := e.CheckIfApplied(args)
-	//	if !applied {
-	//		log.Errorf("Experiment %s not applied, rolling back", e.Key)
-	//		err = backups.RestoreFile(apiServerFile)
-	//		if err != nil {
-	//			log.Fatalf("rollback failed: %v", err)
-	//		}
-	//		return
-	//	}
-	//}
+	t := time.NewTicker(10 * time.Second)
+	checks := 0
+	pending := len(experiments)
+
+	for pending > 0 {
+		select {
+		case <-t.C:
+			if pending > 0 {
+				for _, e := range experiments {
+					markedUnapplied := false
+
+					args, err := getKubeAPIServerArgs()
+					if err != nil {
+						log.Infof("error getting cmd args: %v", err)
+						checks += 1
+						break
+					}
+
+					if !e.Applied {
+						if e.CheckIfApplied(args) {
+							log.Infof("Experiment %s applied", e.Key)
+							e.Applied = true
+							pending--
+						} else {
+							if !markedUnapplied {
+								checks += 1
+								markedUnapplied = true
+							}
+
+							if checks >= 12 {
+								log.Errorf("Experiment %s not applied, rolling back", e.Key)
+								err = backups.RestoreFile(apiServerFile)
+								if err != nil {
+									log.Fatalf("rollback failed: %v", err)
+								}
+								return
+							} else {
+								log.Infof("Experiment %s not yet applied, attempt #%d", e.Key, checks+1)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	r := &Runner{
+		log: log,
+	}
+
+	err = r.wait(experiments)
+	if err != nil {
+		log.Fatalf("failed restore: %v", err)
+	}
+	r.log.Info("API server Pod config restored, ending")
 }
 
-func(r *Runner) wait(completedExperiments []experiment.Experiment) error {
+func(r *Runner) wait(experiments []experiment.Experiment) error {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	keys := make([]string, len(completedExperiments))
-	for i, e := range completedExperiments {
-	keys[i] = e.Key
+	keys := make([]string, len(experiments))
+	for i, e := range experiments {
+		keys[i] = e.Key
 	}
 	misconf := strings.Join(keys, ", ")
 
@@ -122,7 +156,7 @@ func(r *Runner) wait(completedExperiments []experiment.Experiment) error {
 			r.log.Infof("Active API server misconfigurations %s", misconf)
 		case <-sigs:
 			r.log.Info("Experiments terminated. Rolling back")
-		return r.rollbackExperiments(completedExperiments)
+			return backups.RestoreFile(apiServerFile)
 		}
 	}
 }

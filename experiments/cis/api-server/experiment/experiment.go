@@ -17,6 +17,7 @@ type Experiment struct {
 	Value     string `yaml:"value"`
 	Key       string `yaml:"key"`
 	Action    string `yaml:"action""`
+	Applied   bool
 }
 
 func (e *Experiment) Execute(commands []string) ([]string, error) {
@@ -110,7 +111,7 @@ func (e *Experiment) executeRemoveValue(commands []string) ([]string, error) {
 }
 
 func (e *Experiment) CheckIfApplied(cmdArgs []string) bool {
-	if e.Action == pushValue || e.Action == setValue {
+	if e.Action == pushValue || e.Action == setValue || e.Action == set {
 		return e.checkValue(cmdArgs)
 	}
 
