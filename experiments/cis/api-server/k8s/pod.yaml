@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apiserver
+  namespace: chaos
+spec:
+  nodeName: chaos-control-plane
+  restartPolicy: Never
+  hostPID: true
+  containers:
+  - name: apiserver
+    image: localhost:5000/apiserver:local
+    args: ["1.2.1"]
+    imagePullPolicy: Always
+    volumeMounts:
+    - name: etc-kubernetes
+      mountPath: /manifests
+    readinessProbe:
+      exec:
+        command:
+        - cat
+        - /tmp/ready
+  volumes:
+    - name: etc-kubernetes
+      hostPath:
+        path: "/etc/kubernetes/manifests"

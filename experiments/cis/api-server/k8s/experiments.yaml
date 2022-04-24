@@ -1,0 +1,76 @@
+experiments:
+  - key: 1.2.1
+    parameter: --anonymous-auth
+    value: "true"
+    action: set
+  # - key: 1.2.2
+  #   parameter: --basic-auth-file
+  #   value: "x"
+  #   last-version: unknown
+  #   action: remove
+  - key: 1.2.3
+    parameter: --anonymous-auth
+    value: "true"
+    action: set
+    last-version: 1.21
+  # - key: 1.2.4
+  #   parameter: --kubelet-https
+  #   action: setValue
+  #   value: false
+  #   last-version: 1.18
+  - key: 1.2.7
+    parameter: --authorization-mode
+    value: AlwaysAllow
+    action: setValue
+    last-version: 1.21
+  - key: 1.2.8
+    parameter: --authorization-mode
+    value: Node
+    action: removeValue
+    last-version: 1.21
+  - key: 1.2.9
+    parameter: --authorization-mode
+    value: RBAC
+    action: removeValue
+  - key: 1.2.11
+    parameter: --enable-admission-plugins
+    value: AlwaysAdmit
+    action: setValue
+  - key: 1.2.14
+    parameter: --disable-admission-plugins
+    value: ServiceAccount
+    action: pushValue
+  # - key: 1.2.17
+  #   parameter: --enable-admission-plugins
+  #   value: NodeRestriction
+  #   action: removeValue
+  #   last-version: 1.21
+  - key: 1.2.21
+    parameter: --profiling
+    value: "true"
+    action: setValue
+    last-version: 1.21
+  - key: 1.2.22
+    parameter: --audit-log-path
+    value: /dev/null
+    action: setValue
+    last-version: 1.21
+  - key: 1.2.23
+    parameter: --audit-log-maxage
+    value: 0
+    action: setValue
+    last-version: 1.21
+  - key: 1.2.24
+    parameter: --audit-log-maxbackup
+    value: 0
+    action: setValue
+    last-version: 1.21
+  # - key: 1.2.26
+  #   parameter: --request-timeout
+  #   value: 3600
+  #   action: setValue
+  #   last-version: 1.21
+  - key: 1.2.27
+    parameter: --service-account-lookup
+    value: false
+    action: setValue
