@@ -1,20 +1,11 @@
 # Test environment
 
-<p>This is the test environment for the security operator.</p>
+Kirvis can be tested with kind by using [kind](https://kind.sigs.k8s.io/), but feel free to use Minikube or any other Kubernetes distribution, as the project depends on Kubernetes version.
 
-Two variants: minikube and kind.
-
-Kind is easier to run but minikube can be used with Virtualbox to simulate a whole virtualized node, which makes some configurations easier to test.
+For some experiments, interaction with the control plane is required.
 
 <p>
 Test cluster to run experiments on 
 
-1. `sh kind/cluster-with-registry.sh`
-2. `kubectl apply -f nginx/deployment.yaml nginx/lb.yaml`
-3. `kubectl port-forward service/example-service 13337:13337`
-</p>
-
-Current experiments: 
-
-- Changing Kubelet service file permission on a Node. To be detected by kube-hunter.
-- Uploading a different image to the image registry after deployment, before scaling up. Difference detected in logs.
+1. `./kind/cluster-with-registry.sh` - Kind cluster with two nodes and an image registry.
+2. (optional) `./observ/loki-prom-grafana.sh` - Loki-Promtail-Grafana observability stack.

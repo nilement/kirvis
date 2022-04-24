@@ -1,3 +1,8 @@
-# SCE Kubernetes experimental project
+# Kirvis  - Security Chaos Engineering for Kubernetes (early stage)
 
-This is a project containing several experiments for trying out Security Chaos Engineering in Kubernetes. It contains several experiments in Kubernetes that can be deployed as pods in a Kubernetes cluster. Upon deletion, using a preStop hook, they will attempt to revert any caused changes to the cluster, without any guarantees. Use at your own caution.
+Kirvis is a Security Chaos Engineering (SCE) project for Kubernetes. 
+It started as a student project so it might contain flaws.
+
+## License
+
+Code is licensed under the [Apache License 2.0](LICENSE). See [NOTICE.md](NOTICE.md) for complete details, including software and third-party licenses and permissions.
