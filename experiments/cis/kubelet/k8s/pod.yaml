@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubelet-misconfiguration
+  namespace: chaos
+spec:
+  nodeName: chaos-worker
+  restartPolicy: Never
+  containers:
+  - name: kubelet-misconfiguration
+    image: localhost:5000/kubelet:local
+    args: ["anonymous-auth"]
+    imagePullPolicy: Always
+    readinessProbe:
+      exec:
+        command:
+        - cat
+        - /tmp/ready
+    resources:
+      limits:
+        cpu: "0.2"
+        memory: "100Mi"
