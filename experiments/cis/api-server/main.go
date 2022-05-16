@@ -11,9 +11,9 @@ import (
 	"github.com/shirou/gopsutil/v3/process"
 	"github.com/sirupsen/logrus"
 
+	"github.com/nilement/apiserver/backups"
 	"github.com/nilement/apiserver/config"
 	"github.com/nilement/apiserver/experiment"
-	"github.com/nilement/apiserver/backups"
 )
 
 const (
@@ -70,7 +70,7 @@ func main() {
 	for _, e := range experiments {
 		commands, err = e.Execute(commands)
 		if err != nil {
-
+			log.Fatalf("failed applying configuration: %v", err)
 		}
 	}
 
